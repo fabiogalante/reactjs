@@ -21,9 +21,7 @@ class App extends Component {
 
 
   render() {
-
     const {name, counter} = this.state; // ou const nome = this.state.name;
-
     return (
         <div className="App">
           <header className="App-header">
