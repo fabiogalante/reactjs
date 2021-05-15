@@ -5,77 +5,56 @@ import {Component} from "react";
 class App extends Component {
     state = {
         counter: 0,
-        posts: [
-            {
-                id: 1,
-                title: 'O título 1',
-                body: 'O corpo 1'
-            }, {
-                id: 2,
-                title: 'O título 1',
-                body: 'O corpo 1'
-            }, {
-                id: 3,
-                title: 'O título 3',
-                body: 'O corpo 3'
-            },
-        ]
+        posts: []
     };
 
     componentDidMount() {
-        this.handleTimeOut();
+        this.loadPosts();
+    }
+
+    loadPosts = async () => {
+        const postsResponse = fetch('https://jsonplaceholder.typicode.com/posts');
+        const photosResponse = fetch('https://jsonplaceholder.typicode.com/photos');
+        const [posts, photos] = await Promise.all([postsResponse, photosResponse]);
+
+        const postsJson = await posts.json();
+        const photosJson = await photos.json();
+
+        const postsAndPhotos = postsJson.map((post, index) => {
+            return {...post, cover: photosJson[index].url}
+        });
+
+        this.setState({posts: postsAndPhotos});
+
+
     }
 
     componentDidUpdate(prevProps, prevState, snapshot) {
-
     }
 
-    handleTimeOut = () => {
-        const {posts, counter} = this.state;
-        posts[0].title = 'O titulo foi mudado';
-        setTimeout(() => {
-            this.setState({posts, counter: counter + 1});
-        }, 2000)
+    componentWillUnmount() {
     }
 
 
     render() {
-        const {posts, counter} = this.state;
+        const {posts} = this.state;
+
         return (
-            <div className="App">
-                <h1>{counter}</h1>
-                {posts.map(post => (
-                    <div key={post.id}>
-                        <h1>{post.title}</h1>
-                        <p>{post.body}</p>
-                    </div>
-                ))}
-            </div>
+            <section className="container">
+                <div className="posts">
+                    {posts.map(post => (
+                        <div className="post">
+                            <img src={post.cover} alt={post.title}/>
+                            <div key={post.id} className="post-content">
+                                <h1>{post.title}</h1>
+                                <p>{post.body}</p>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </section>
         )
     }
 }
-
-
-// componentDidMount() {
-//     setTimeout(() => {
-//         this.setState({
-//             posts: [
-//                 {
-//                     id: 1,
-//                     title: 'O título 1',
-//                     body: 'O corpo 1'
-//                 }, {
-//                     id: 2,
-//                     title: 'O título 1',
-//                     body: 'O corpo 1'
-//                 }, {
-//                     id: 3,
-//                     title: 'O título 3',
-//                     body: 'O corpo 3'
-//                 },
-//             ]
-//         })
-//     }, 5000);
-// }
 
 export default App;
